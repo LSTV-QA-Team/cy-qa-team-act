@@ -26,7 +26,7 @@
 
 
 Cypress.Commands.add('login', (userCode, password) => {
-  cy.session('login', () => {
+  cy.session([userCode, password], () => {
       cy.visit('/login')
       cy.get('#button-form-2').click()
       cy.get('.mx-3').click()

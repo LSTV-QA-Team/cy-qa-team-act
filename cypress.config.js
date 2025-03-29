@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+const { exec } = require("child_process")
 
 module.exports = defineConfig({
   e2e: {
@@ -14,6 +15,19 @@ module.exports = defineConfig({
         }
 
         return launchOptions;
+      });
+      on('task', {
+        async execute(command) {
+          return new Promise((resolve, reject) => {
+            exec(command, { shell: 'bash' }, (error, stdout, stderr) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve({ stdout, stderr });
+              }
+            });
+          });
+        }
       });
       return config;
     },
