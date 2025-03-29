@@ -6,12 +6,9 @@ describe("GROUP ACTIVITY", () => {
     cy.get(":nth-child(1) > #home-card-styled").click();
 
     cy.contains("Void/Refund Reasons").click();
-    cy.get('[aria-label="Show/Hide search"]').click();
-    cy.get("#pos-table-search").click().type("wrong punch");
 
-    cy.get("body").then(($rs1) => {
-      if ($rs1.find("td > .MuiTypography-root").length) {
-        cy.get("td > .MuiTypography-root").should("have.text", "wrong punch");
+    cy.get("tbody").then(($table) => {
+      if ($table.text().includes("wrong punch")) {
         cy.log("MERON NAAAAAAAAAAAAA!");
         cy.screenshot();
       } else {
@@ -26,19 +23,34 @@ describe("GROUP ACTIVITY", () => {
             cy.get("#modal-h1").should("have.text", "Add Void/Refund Reason");
             cy.wait(4000);
             cy.get("#voidcde").click().type(data[key].voidReasons);
-            cy.get("#button-form-2").click().wait(4000);
+            cy.get("#button-form-2").click();
 
-            cy.get("body").then(($toast) => {
+            cy.get(".Toastify__toast-body").then(($toast) => {
               if (
                 $toast
-                  .find(".Toastify__toast-body > :nth-child(2)")
-                  .should(
-                    "have.text",
-                    "Duplicate entry! Kindly check your inputs"
-                  )
+                  .text()
+                  .includes("Duplicate entry! Kindly check your inputs")
               ) {
                 cy.screenshot();
                 cy.log("DUPLICATE ENTRY");
+                cy.get("#button-form-1").click().wait(3000);
+                cy.get("#warning-button-2").click().wait(2000);
+                cy.get("#back-button").click().wait(2000);
+                cy.contains("Void/Refund Reasons").click();
+                cy.get('[aria-label="Show/Hide search"]').click();
+                cy.get("#pos-table-search").click().type(data[key].voidReasons);
+
+                cy.get("body").then(($rs1) => {
+                  if ($rs1.find(".css-1gpk8l6-MuiTableCell-root").length) {
+                    cy.get(".css-1gpk8l6-MuiTableCell-root").should(
+                      "have.text",
+                      data[key].voidReasons
+                    );
+                    cy.log("MERON NAAAAAAAAAAAAA!");
+                    cy.screenshot();
+                  }
+                });
+              } else {
                 cy.get("#button-form-1").click().wait(3000);
                 cy.get("#back-button").click().wait(2000);
                 cy.contains("Void/Refund Reasons").click();
