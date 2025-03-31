@@ -24,6 +24,7 @@ describe("GROUP ACTIVITY", () => {
             cy.wait(4000);
             cy.get("#voidcde").click().type(data[key].voidReasons);
             cy.get("#button-form-2").click();
+            cy.wait(500);
 
             cy.get(".Toastify__toast-body").then(($toast) => {
               if (
@@ -34,7 +35,7 @@ describe("GROUP ACTIVITY", () => {
                 cy.screenshot();
                 cy.log("DUPLICATE ENTRY");
                 cy.get("#button-form-1").click().wait(3000);
-                cy.get("#warning-button-2").click().wait(2000);
+                cy.get("#warning-button-2").click().wait(4000);
                 cy.get("#back-button").click().wait(2000);
                 cy.contains("Void/Refund Reasons").click();
                 cy.get('[aria-label="Show/Hide search"]').click();
