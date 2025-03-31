@@ -26,21 +26,25 @@
 
 
 Cypress.Commands.add('login', (userCode, password) => {
-    cy.session('login', () => {
-        cy.visit('/login')
-        cy.get('#button-form-2').click()
-        cy.get('.mx-3').click()
-        cy.wait(4000)
-        cy.get('#usrcde').type(userCode)
-        cy.get('#usrpwd').type(password)
-        cy.get('.mt-8 > #login-btn-styled').click()
-        cy.wait(2000)
-    })
+  cy.session([userCode, password], () => {
+      cy.visit('/login')
+      cy.get('#button-form-2').click()
+      cy.get('.mx-3').click()
+      cy.wait(4000)
+      cy.get('#usrcde').type(userCode)
+      cy.get('#usrpwd').type(password)
+      cy.get('.mt-8 > #login-btn-styled').click()
+      cy.wait(2000)
+  })
 })
 
 Cypress.Commands.add('navigateToModule', (menuSelector, submenuSelector) => {
-    cy.contains(menuSelector).click()
-    cy.wait(2000)
-    cy.contains(submenuSelector).click()
-    cy.wait(2000) 
-  })
+  cy.contains(menuSelector).click()
+  cy.wait(2000)
+  cy.contains(submenuSelector).click()
+  cy.wait(2000) 
+})
+
+Cypress.Commands.add("execute", (command) => {
+return cy.task("execute", command);
+})
