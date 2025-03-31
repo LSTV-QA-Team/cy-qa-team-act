@@ -5,6 +5,7 @@ describe('Cristel Activity', () => {
     cy.login('lstv', 'lstventures')
   })
 
+  // IF-ELSE STATEMENTS
   it.only('Verify Duplicate Data', () => {
 
     cy.navigateToModule('Master File', 'Item Classifications')
@@ -121,6 +122,30 @@ describe('Cristel Activity', () => {
         cy.wrap(data[key].data).should('not.contain', 'failed')
 
       }
+    })
+  })
+
+  //Skip mina ito.
+  it('Verify Report', () => {
+
+    cy.get('#printer-button-button-styled').click()
+
+    cy.wait(4000)
+
+    cy.execute('node pdf-to-excel-report.js')
+
+    cy.wait(4000)
+
+    cy.execute('node excel-to-json.js')
+
+    cy.readFile('./cypress/fixtures/excelToJsonSheet0.json')
+
+    cy.fixture('excelToJsonSheet0.json').then((data) => {
+
+      data.forEach((item) => {
+        cy.log(`Item Class: ${item.itemClass}`)
+
+      })
     })
   })
 })
