@@ -24,6 +24,7 @@ describe("GROUP ACTIVITY", () => {
             cy.wait(4000);
             cy.get("#voidcde").click().type(data[key].voidReasons);
             cy.get("#button-form-2").click();
+            cy.wait(500);
 
             cy.get(".Toastify__toast-body").then(($toast) => {
               if (
