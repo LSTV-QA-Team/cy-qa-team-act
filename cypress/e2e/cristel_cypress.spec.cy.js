@@ -44,7 +44,7 @@ describe('Cristel Activity', () => {
 
     cy.get('tbody tr').eq(0).find('td').eq(1).invoke('text').then((text) => { // kunin yung  text sa first row, second column
       
-      if (text === 'Food') {                                                  // check kung equal sa 'Food' yung text
+      if (text === 'Food') {                                                  // check kung equal sa 'Food' yung ni-invoke na text
 
         cy.get('tbody tr').eq(0).within(() => {                               // within the first row, click the delete icon
 
@@ -60,13 +60,14 @@ describe('Cristel Activity', () => {
 
         cy.get('body').then(($body) => {
 
-          if ($body.text().includes(`"${text}" is already in use. Unable to delete.`)) {
-
-            cy.log('Passed: Prevent to delete used data.')
-
+          if ($body.text().includes(`"${text}" is already in use. Unable to delete.`)) {   // check kung nag show yung validation 
+                                                                                           // message na "is already in use.
+            cy.log('Passed: Prevent to delete used data.')                                 // if nag show, passed
+                                                                                           // if di nag show, failed
             cy.get('#itm-class-section').screenshot()
 
           } else {
+
             cy.get('#\\32').invoke('text').then((validationMsg) => {
 
               cy.log(validationMsg)
@@ -76,6 +77,10 @@ describe('Cristel Activity', () => {
             
           }
         })
+      } else {
+
+        cy.log('Failed: Unable to find the used data.') // if wala yung 'Food' sa first row, second column, failed
+
       }
     })
   })
@@ -83,29 +88,31 @@ describe('Cristel Activity', () => {
   it.only('Verify Data in The Item Classifications Table', () => {
     cy.wait(4000)
 
-    let actualItemClass = []
+    let actualItemClass = []  // dito ni-store yung actual data na nakuha sa table
 
-    cy.get('tbody tr td:nth-child(2)').each(($row) => {
+    cy.get('tbody tr td:nth-child(2)').each(($row) => { // kunin lahat ng text sa second column ng table, item class data
       
-      actualItemClass.push($row.text().trim()) 
+      actualItemClass.push($row.text().trim())  
 
-      }).then(() => {
+      }).then(() => { // after ma-loop, i-compare yung actual data sa expected data na nasa JSON file
 
       cy.fixture('item-class-data.json').then((data) => {
 
-        const expectedItemClass = data.map(item => item.itemClass)
+        const expectedItemClass = data.map(item => item.itemClass) // kunin lahat ng item class data sa JSON file
 
-        cy.log(`Actual: ${actualItemClass}`)
-        cy.log(`Expected: ${expectedItemClass}`)
+        cy.log(`Actual: ${actualItemClass}`) // i-log yung actual data na nakuha sa table
+        cy.log(`Expected: ${expectedItemClass}`)  // i-log yung expected data na nakuha sa JSON file
 
-        if (JSON.stringify(actualItemClass) === JSON.stringify(expectedItemClass)) {
-
-          cy.log('Passed: Data in the Item Classifications Table is correct.')
-          assertionResults.push({"data" : "passed"})
-          
+        if (JSON.stringify(actualItemClass) === JSON.stringify(expectedItemClass)) { // i-compare yung actual data sa expected    
+                                                                                     // data, kung pareho, passed
+          cy.log('Passed: Data in the Item Classifications Table is correct.')       // if di pareho, failed 
+                                                                                     // why use JSON.stringify? para ma-compare
+          assertionResults.push({"data" : "passed"})                                 // yung arrays as strings, para yung value 
+                                                                                     // comparison ay maging possible 
         } else {
 
           cy.log('Failed: Data in the Item Classifications Table is incorrect.')
+          
           assertionResults.push({"data" : "failed"})
 
         }
@@ -125,8 +132,7 @@ describe('Cristel Activity', () => {
     })
   })
 
-  //Skip mina ito.
-  it('Verify Report', () => {
+  it.only('Verify Report', () => {
 
     cy.get('#printer-button-button-styled').click()
 
@@ -136,14 +142,14 @@ describe('Cristel Activity', () => {
 
     cy.wait(4000)
 
-    cy.execute('node excel-to-json.js')
+    cy.execute('node excel_to_json.js')
 
     cy.readFile('./cypress/fixtures/excelToJsonSheet0.json')
 
     cy.fixture('excelToJsonSheet0.json').then((data) => {
 
       data.forEach((item) => {
-        cy.log(`Item Class: ${item.itemClass}`)
+        cy.log(`Item Class: ${item["Item Classification Masterfile"]}`)
 
       })
     })
