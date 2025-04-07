@@ -5,22 +5,34 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.18.0
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Start local server
-        run: npm start &  # The '&' runs it in background
+        run: npm start & # The & runs it in background
         env:
-          # Add any environment variables your server needs
+          # Add any environment variables your app needs
           NODE_ENV: test
-          PORT: 3000  # Or whatever port your app uses
+          PORT: 5173 # or your app's port
+
+      - name: Wait for server to be ready
+        uses: andstor/wait-for-http-action@v2
+        with:
+          url: http://localhost:5173 # match your app's port
+          timeout: 10000 # 10 seconds
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
         with:
-          start: npm run dev  # Alternative if you want the action to start the server
-          wait-on: 'http://localhost:3000'  # Wait for server to be ready
-          browser: chrome
+          start: npm start # Optional - the action can handle this too
+          wait-on: 'http://localhost:3000' # match your app's port
+          # browser: chrome # Uncomment to specify browser
+          # headless: true # Uncomment to force headless mode
