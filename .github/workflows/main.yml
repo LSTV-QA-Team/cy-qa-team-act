@@ -11,33 +11,27 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20.18.0
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Start backend server
-        run: node . &
-        working-directory: ./backend  # adjust path to your backend
-        env:
-          NODE_ENV: test
-          PORT: 8080  # or your backend port
+      - name: Start Backend
+        run: node . & # This starts your dev server in background
+        working-directory: D:\LSTV\LSTV Repositories\REACT-POS-OTC-NEW\pos-otc-be  # adjust if your package.json is in a subdirectory
 
-      - name: Start frontend server
+      - name: Start Frontend
         run: npm run dev &
-        working-directory: ./frontend  # adjust path to your frontend
-        env:
-          NODE_ENV: test
-          PORT: 3000  # or your frontend port
-
-      - name: Wait for servers to be ready
-        run: |
-          timeout 60 bash -c 'while ! curl -s http://localhost:5000 >/dev/null; do sleep 1; done'
-          timeout 60 bash -c 'while ! curl -s http://localhost:3000 >/dev/null; do sleep 1; done'
-          echo "Both servers are up!"
+        working-directory: D:\LSTV\LSTV Repositories\REACT-POS-OTC-NEW\pos-otc-fe
+      
+      - name: Wait for server to be ready
+        uses: cypress-io/github-action@v5
+        with:
+          wait-on: 'http://localhost:5173/'  # waits for server to be ready
+          wait-on-timeout: 60  # seconds
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
         with:
-          working-directory: ./frontend  # where your Cypress tests are
-          config: baseUrl=http://localhost:3000
+          working-directory: cypress/e2e/cristel_cypress.spec.cy.js  # where your Cypress tests are located
+          config: baseUrl=http://localhost:5173
