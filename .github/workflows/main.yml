@@ -1,0 +1,26 @@
+name: Cypress Tests
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start local server
+        run: npm start &  # The '&' runs it in background
+        env:
+          # Add any environment variables your server needs
+          NODE_ENV: test
+          PORT: 3000  # Or whatever port your app uses
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v5
+        with:
+          start: npm run dev  # Alternative if you want the action to start the server
+          wait-on: 'http://localhost:3000'  # Wait for server to be ready
+          browser: chrome
